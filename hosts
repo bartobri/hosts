@@ -58,8 +58,13 @@ if ($ARGV[0] eq "show") {
 	if ($i < 0) {
 		print "Host $ARGV[1] does not exist.\n";
 		exit 0;
+	} elsif ($hosts_content[$i] !~ m/^\#/) {
+		print "Host $ARGV[1] already started.\n";
+		exit 0;
+	} else {
+		$hosts_content[$i] =~ s/^[#]+(.+)$/$1/;
+		print "Host $ARGV[1] started.\n";
 	}
-	print "starting\n";
 } elsif ($ARGV[0] eq "stop") {
 	if (!$ARGV[1]) {
 		exit_usage("Missing host argument.");
@@ -67,6 +72,9 @@ if ($ARGV[0] eq "show") {
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
 		print "Host $ARGV[1] does not exist.\n";
+		exit 0;
+	} elsif ($hosts_content[$i] =~ m/^\#/) {
+		print "Host $ARGV[1] already stopped.\n";
 		exit 0;
 	} else {
 		$hosts_content[$i] = "#" . $hosts_content[$i];
