@@ -11,6 +11,7 @@ if (!$ARGV[0]) {
 }
 
 our $default_ip = "127.0.0.1";
+our $newline = "\r\n";
 our $hosts_file = "/mnt/c/Windows/System32/drivers/etc/hosts";
 our @hosts_content = ();
 
@@ -31,7 +32,7 @@ if ($ARGV[0] eq "show") {
 	}
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
-		my $entry = "$default_ip\t$ARGV[1]\r\n";
+		my $entry = "$default_ip\t$ARGV[1]$newline";
 		push (@hosts_content, $entry);
 		print "Host $ARGV[1] added.\n";
 		print $entry . "\n";
