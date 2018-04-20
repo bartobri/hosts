@@ -1,0 +1,85 @@
+#!/usr/bin/perl
+
+use strict;
+
+## Run as root
+if ($> != 0) {
+    die "run me as root!\n";
+}
+
+if (!$ARGV[0] || !$ARGV[1] ) {
+	print "Arguments required:\n\n";
+	print_usage();
+}
+
+our $hosts_file = "/mnt/c/Windows/System32/drivers/etc/hosts";
+our @hosts_content = ();
+
+open(FILE, "<$hosts_file") or die;
+while (<FILE>) {
+	push(@hosts_content, $_);
+}
+close(FILE);
+
+if ($ARGV[0] eq "add") {
+	my $i = host_index($ARGV[1]);
+	if ($i < 0) {
+		push (@hosts_content, "127.0.0.1\t" . $ARGV[1] . "\r\n");
+		print "Host $ARGV[1] added.\n";
+	} else {
+		print "Host $ARGV[1] already exists:\n";
+		print $hosts_content[$i] . "\n";
+		exit 0;
+	}
+} elsif ($ARGV[0] eq "rm") {
+	my $i = host_index($ARGV[1]);
+	if ($i < 0) {
+		print "Host $ARGV[1] does not exist.\n";
+		exit 0;
+	} else {
+		splice(@hosts_content, $i, 1);
+		print "Host $ARGV[1] removed.\n";
+	}
+} elsif ($ARGV[0] eq "start") {
+	my $i = host_index($ARGV[1]);
+	if ($i < 0) {
+		print "Host $ARGV[1] does not exist.\n";
+		exit 0;
+	}
+	print "starting\n";
+} elsif ($ARGV[0] eq "stop") {
+	my $i = host_index($ARGV[1]);
+	if ($i < 0) {
+		print "Host $ARGV[1] does not exist.\n";
+		exit 0;
+	} else {
+		$hosts_content[$i] = "#" . $hosts_content[$i];
+		print "Host $ARGV[1] stopped.\n";
+	}
+} else {
+	print "Command argument not recognized.\n";
+	print_usage();
+}
+
+open(FILE, ">$hosts_file") or die;
+foreach my $line (@hosts_content) {
+	print FILE $line;
+}
+close(FILE);
+
+
+sub print_usage {
+	print "hosts [add|rm|start|stop] <domain>\n";
+	exit 1;
+}
+
+sub host_index {
+	my $host = shift;
+	my $i;
+	for ($i = 0; $i <= $#hosts_content; $i++) {
+		if ($hosts_content[$i] =~ m/^[#]*[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\s$host\s$/) {
+			return $i;
+		}
+	}
+	return -1;
+}
