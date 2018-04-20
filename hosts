@@ -2,7 +2,6 @@
 
 use strict;
 
-## Run as root
 if ($> != 0) {
     die "run me as root!\n";
 }
@@ -31,8 +30,10 @@ if ($ARGV[0] eq "show") {
 	}
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
-		push (@hosts_content, "127.0.0.1\t" . $ARGV[1] . "\r\n");
+		my $entry = "127.0.0.1\t" . $ARGV[1] . "\r\n";
+		push (@hosts_content, $entry);
 		print "Host $ARGV[1] added.\n";
+		print $entry . "\n";
 	} else {
 		print "Host $ARGV[1] already exists:\n";
 		print $hosts_content[$i] . "\n";
@@ -60,10 +61,12 @@ if ($ARGV[0] eq "show") {
 		exit 0;
 	} elsif ($hosts_content[$i] !~ m/^\#/) {
 		print "Host $ARGV[1] already started.\n";
+		print $hosts_content[$i] . "\n";
 		exit 0;
 	} else {
 		$hosts_content[$i] =~ s/^[#]+(.+)$/$1/;
 		print "Host $ARGV[1] started.\n";
+		print $hosts_content[$i] . "\n";
 	}
 } elsif ($ARGV[0] eq "stop") {
 	if (!$ARGV[1]) {
@@ -75,10 +78,12 @@ if ($ARGV[0] eq "show") {
 		exit 0;
 	} elsif ($hosts_content[$i] =~ m/^\#/) {
 		print "Host $ARGV[1] already stopped.\n";
+		print $hosts_content[$i] . "\n";
 		exit 0;
 	} else {
 		$hosts_content[$i] = "#" . $hosts_content[$i];
 		print "Host $ARGV[1] stopped.\n";
+		print $hosts_content[$i] . "\n";
 	}
 } else {
 	print_usage("Command $ARGV[0] not recognized.");
