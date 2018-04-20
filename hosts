@@ -8,8 +8,7 @@ if ($> != 0) {
 }
 
 if (!$ARGV[0]) {
-	print "Argument required:\n\n";
-	print_usage();
+	exit_usage("Missing command argument.");
 }
 
 our $hosts_file = "/mnt/c/Windows/System32/drivers/etc/hosts";
@@ -27,6 +26,9 @@ if ($ARGV[0] eq "show") {
 	}
 	exit 0;
 } elsif ($ARGV[0] eq "add") {
+	if (!$ARGV[1]) {
+		exit_usage("Missing host argument.");
+	}
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
 		push (@hosts_content, "127.0.0.1\t" . $ARGV[1] . "\r\n");
@@ -37,6 +39,9 @@ if ($ARGV[0] eq "show") {
 		exit 0;
 	}
 } elsif ($ARGV[0] eq "rm") {
+	if (!$ARGV[1]) {
+		exit_usage("Missing host argument.");
+	}
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
 		print "Host $ARGV[1] does not exist.\n";
@@ -46,6 +51,9 @@ if ($ARGV[0] eq "show") {
 		print "Host $ARGV[1] removed.\n";
 	}
 } elsif ($ARGV[0] eq "start") {
+	if (!$ARGV[1]) {
+		exit_usage("Missing host argument.");
+	}
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
 		print "Host $ARGV[1] does not exist.\n";
@@ -53,6 +61,9 @@ if ($ARGV[0] eq "show") {
 	}
 	print "starting\n";
 } elsif ($ARGV[0] eq "stop") {
+	if (!$ARGV[1]) {
+		exit_usage("Missing host argument.");
+	}
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
 		print "Host $ARGV[1] does not exist.\n";
@@ -62,8 +73,7 @@ if ($ARGV[0] eq "show") {
 		print "Host $ARGV[1] stopped.\n";
 	}
 } else {
-	print "Command argument not recognized.\n";
-	print_usage();
+	print_usage("Command $ARGV[0] not recognized.");
 }
 
 open(FILE, ">$hosts_file") or die;
@@ -73,8 +83,12 @@ foreach my $line (@hosts_content) {
 close(FILE);
 
 
-sub print_usage {
-	print "hosts [show] [add|rm|start|stop <domain>]\n";
+sub exit_usage {
+	my $exit_message;
+	if ($exit_message = shift) {
+		print $exit_message . "\n";
+	}
+	print "hosts [show] [add|rm|start|stop <host>]\n";
 	exit 1;
 }
 
