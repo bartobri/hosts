@@ -7,8 +7,8 @@ if ($> != 0) {
     die "run me as root!\n";
 }
 
-if (!$ARGV[0] || !$ARGV[1] ) {
-	print "Arguments required:\n\n";
+if (!$ARGV[0]) {
+	print "Argument required:\n\n";
 	print_usage();
 }
 
@@ -21,7 +21,12 @@ while (<FILE>) {
 }
 close(FILE);
 
-if ($ARGV[0] eq "add") {
+if ($ARGV[0] eq "show") {
+	foreach my $line (@hosts_content) {
+		print $line;
+	}
+	exit 0;
+} elsif ($ARGV[0] eq "add") {
 	my $i = host_index($ARGV[1]);
 	if ($i < 0) {
 		push (@hosts_content, "127.0.0.1\t" . $ARGV[1] . "\r\n");
@@ -69,7 +74,7 @@ close(FILE);
 
 
 sub print_usage {
-	print "hosts [add|rm|start|stop] <domain>\n";
+	print "hosts [show] [add|rm|start|stop <domain>]\n";
 	exit 1;
 }
 
