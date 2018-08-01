@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 
 if ($> != 0) {
     die "run me as root!\n";
@@ -88,7 +89,7 @@ if ($ARGV[0] eq "show") {
 		print $hosts_content[$i] . "\n";
 	}
 } else {
-	print_usage("Command $ARGV[0] not recognized.");
+	exit_usage("Command $ARGV[0] not recognized.");
 }
 
 open(FILE, ">$hosts_file") or die;
